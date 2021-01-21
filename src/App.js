@@ -38,7 +38,7 @@ function App() {
 
     useEffect(() => {
         gifAPI.search(
-            recordedText || 'dogs',
+            recordedText,
             {
                 limit: 10,
                 lang: 'es',
@@ -60,9 +60,14 @@ function App() {
         <div className="App">
             <header className="App-header">
                 {
-                    !isListing && <h1>
-                        To Search Click the Mic
-                    </h1>
+                    !isListing && (
+                        <>
+                            <h1>
+                                Search for GIFs using your voice
+                            </h1>
+                            <h2>Click the mic to start</h2>
+                        </>
+                    )
                 }
                 <RecordButton
                     src={Mic}
