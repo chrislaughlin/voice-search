@@ -1,25 +1,87 @@
-import logo from './logo.svg';
+import {useEffect, useState} from 'react';
 import './App.css';
+import styled from 'styled-components';
+import Mic from './mic-icon.jpg';
+import { GiphyFetch } from '@giphy/js-fetch-api'
+import {key} from "./api";
+import Gallery from 'react-photo-gallery'
+
+const RecordButton = styled.img`
+  height: 50px;
+  width: 50px;
+
+  &.disabled {
+    opacity: 0.2;
+  }
+`;
+
+// eslint-disable-next-line
+var SpeechRecognition = SpeechRecognition || webkitSpeechRecognition;
+const speech = new SpeechRecognition();
+speech.continuous = true;
+
+const gifAPI = new GiphyFetch(key);
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+
+    const [recordedText, setRecordedText] = useState('');
+    const [gifs, setGifs] = useState([]);
+    const [isListing, setIsListing] = useState(false);
+
+    useEffect(() => {
+        speech.onresult = event => {
+            setRecordedText(
+                event.results[event.results.length - 1][0].transcript
+            );
+        }
+    }, [])
+
+    useEffect(() => {
+        gifAPI.search(
+            recordedText || 'dogs',
+            {
+                limit: 10,
+                lang: 'es',
+                type: "stickers"
+            }
+        ).then(response => {
+            setGifs(response.data.map(gif => {
+                return {
+                    width: gif.images.original.width,
+                    height: gif.images.original.height,
+                    src: gif.images.original.url
+                }
+            }))
+            console.log(response.data);
+        });
+    }, [recordedText])
+
+    return (
+        <div className="App">
+            <header className="App-header">
+                {
+                    !isListing && <h1>
+                        To Search Click the Mic
+                    </h1>
+                }
+                <RecordButton
+                    src={Mic}
+                    alt="mic icon"
+                    onClick={() => {
+                        speech.start()
+                        setIsListing(true);
+                    }}
+                    className={isListing ? 'disabled' : ''}
+                />
+                {
+                    isListing && <h1>
+                        Searching for: {recordedText}
+                    </h1>
+                }
+                <Gallery photos={gifs} />
+            </header>
+        </div>
+    );
 }
 
 export default App;
