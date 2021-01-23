@@ -12,3 +12,4 @@ Voice search using the [SpeechRecognition API](https://developer.mozilla.org/en-
 - Open [http://localhost:3000](http://localhost:3000) to view it in the browser. 
 
 
+![Screenshot](https://raw.githubusercontent.com/chrislaughlin/voice-search/main/Screenshot%202021-01-23%20at%2010.52.02.png)
